@@ -32,14 +32,13 @@ This repository contains the code for `getgrass-bot`, a bot designed to establis
 
    - Visit [https://app.getgrass.io/dashboard](https://app.getgrass.io/register/?referralCode=NXZg3yAsUsXKzy2).
    - Open your browser's developer tools (usually by pressing F12 or right-clicking and selecting "Inspect").
-   - Go to the "Console" tab.
-   - Paste the following command and press Enter:
+   - Paste this to address bar and Enter:
 
      ```javascript
-     localStorage.getItem('userId')
+     javascript:alert(localStorage.getItem('userId'));
      ```
 
-   - Copy the value returned, which is your user ID.
+   - Copy the value, which is your user ID.
 
 2. In .env list your user IDs in this pattern:
 
