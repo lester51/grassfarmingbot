@@ -34,7 +34,9 @@ class Bot {
       ? proxy
       : proxy.startsWith('http')
       ? proxy
-      : `socks5://${proxy}`;
+      : !proxy.includes('://')
+      ? `socks5://${proxy}`
+      : proxy;
     const proxyInfo = await this.getProxyIP(formattedProxy);
 
     if (!proxyInfo) {

@@ -72,7 +72,7 @@ async function selectProxySource(inquirer) {
 async function selectProxySource2(svname) {
   if (["SERVER 1","SERVER 2","SERVER 3","SERVER 4","SERVER 5","SERVER 6","SERVER 7","SERVER 8","SERVER 9"].includes(svname.toUpperCase()))
     return { type: 'url', source: PROXY_SOURCES[svname.toUpperCase()] };
-  else
+  else if
     return { type: 'none' };
 }
 
