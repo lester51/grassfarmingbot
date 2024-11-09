@@ -36,7 +36,7 @@ This repository contains the code for `getgrass-bot`, a bot designed to establis
    - Paste the following command and press Enter:
 
      ```javascript
-     localStorage.getItem('userId');
+     localStorage.getItem('userId')
      ```
 
    - Copy the value returned, which is your user ID.
