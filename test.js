@@ -75,7 +75,9 @@ app.listen(port, () => {
 for (let el in svlist) {
     await main(svlist[el]).catch(console.error);
   }*/
-  main('NO PROXY').catch(console.error);
+  
 })
+
+main('NO PROXY').catch(console.error);
 
 module.exports = app;
