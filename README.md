@@ -11,13 +11,13 @@ This repository contains the code for `getgrass-bot`, a bot designed to establis
 1. Clone this repository to your local machine:
 
    ```bash
-   git clone https://github.com/dante4rt/getgrass-bot.git
+   git clone https://github.com/lester51/grassfarmingbot
    ```
 
 2. Navigate to the project directory:
 
    ```bash
-   cd getgrass-bot
+   cd grassfarmingbot
    ```
 
 3. Install the required dependencies using npm && setup env
@@ -62,9 +62,9 @@ This repository contains the code for `getgrass-bot`, a bot designed to establis
 
 If you would like to support the development of this project, you can make a donation using the following addresses:
 
-- **Solana**: `GLQMG8j23ookY8Af1uLUg4CQzuQYhXcx56rkpZkyiJvP`
-- **EVM**: `0x960EDa0D16f4D70df60629117ad6e5F1E13B8F44`
-- **BTC**: `bc1p9za9ctgwwvc7amdng8gvrjpwhnhnwaxzj3nfv07szqwrsrudfh6qvvxrj8`
+- **Tron(TRX)**: `0x38d6b8CA4bfd2cca11799a2eF99362f39F4087f8`
+- **Solana**: `5pCf42xGn55vYzqCb2HwsnViUvpceNmH8R4GaJ8bEcWz`
+- **Ton**: `0x38d6b8CA4bfd2cca11799a2eF99362f39F4087f8`
 
 ## License
 
