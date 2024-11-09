@@ -1,6 +1,6 @@
 require('colors');
-const path = require('path')
-require('dotenv').config({ path: path.resolve(__dirname, './.env') })
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, './.env') });
 const inquirer = require('inquirer');
 const Bot = require('./src/Bot');
 const Config = require('./src/Config');
@@ -11,10 +11,9 @@ const {
   selectProxySource2
 } = require('./src/ProxyManager');
 const { delay, displayHeader } = require('./src/utils');
-const express = require('express')
-const app = express()
-const port = 3000
-
+const express = require('express');
+const app = express();
+const port = 3000;
 
 async function main(sv) {
   displayHeader();
@@ -45,38 +44,45 @@ async function main(sv) {
       : 'Direct connection mode enabled.'.green
   );
 
-  const userIDs = process.env.UID;
+  /***
+ * UID format in .env: UID=['id1','id2','id3']
+ * Parses single or multiple UIDs
+ */
+
+  let userIDs = [];
+  if (process.env.UID) {
+    userIDs = process.env.UID.replace(/[\[\]']/g, '').split(',').map(id => id.trim());
+  }
+
   if (userIDs.length === 0) {
-    console.error('No user IDs found in uid.txt. Exiting...'.red);
+    console.error('No user IDs found in UID environment variable. Exiting...'.red);
     return;
   }
 
-  console.log(`Loaded ${[userIDs].length} user IDs\n`.green);
-  
-  [bot.connectDirectly(userIDs)]
-  //await proxies.filter((proxy) => bot.connectToProxy(proxy, userIDs))
+  console.log(`Loaded ${userIDs.length} user ID(s)\n`.green);
 
-  /*const connectionPromises = userIDs.flatMap((userID) =>
-    proxySource.type !== 'none'
-      ? proxies.map((proxy) => bot.connectToProxy(proxy, userID))
-      : [bot.connectDirectly(userID)]
-  );
-
-  await Promise.all(connectionPromises);*/
+  if (proxySource.type !== 'none') {
+    await Promise.all(userIDs.flatMap(userID =>
+      proxies.map(proxy => bot.connectToProxy(proxy, userID))
+    ));
+  } else {
+    await Promise.all(userIDs.map(userID => bot.connectDirectly(userID)));
+  }
 }
 
 app.get('/', (req, res) => {
-  res.send('SERVER FOR GRASS NODE AUTOFARMING SCRIPT\nMADE\nBY\nHackMeSenpai(HMS)')
-})
+  res.send('SERVER FOR GRASS NODE AUTOFARMING SCRIPT\nMADE\nBY\nHackMeSenpai(HMS)');
+});
 
 app.listen(port, () => {
-  console.log(`Express Server Started\nlistening on port ${port}`)
-  /*let svlist = ["SERVER 1","SERVER 2","SERVER 3","SERVER 4","SERVER 5","SERVER 6","SERVER 7","SERVER 8","SERVER 9"];
-for (let el in svlist) {
-    await main(svlist[el]).catch(console.error);
-  }*/
-  
-})
+  console.log(`Express Server Started\nlistening on port ${port}`.green);
+  /*
+  let svlist = ["SERVER 1","SERVER 2","SERVER 3","SERVER 4","SERVER 5","SERVER 6","SERVER 7","SERVER 8","SERVER 9"];
+  for (let el of svlist) {
+    main(el).catch(console.error);
+  }
+  */
+});
 
 main('NO PROXY').catch(console.error);
 
