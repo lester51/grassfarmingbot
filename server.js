@@ -1,7 +1,7 @@
 require('colors');
 const fs = require('fs');
 const path = require('path');
-require('dotenv').config({ path: path.resolve(__dirname, './.env') });
+require('dotenv').config();
 const inquirer = require('inquirer');
 const Bot = require('./src/Bot');
 const Config = require('./src/Config');
@@ -50,25 +50,7 @@ async function main(sv) {
  * Parses single or multiple UIDs
  */
 
-  let userIDs = [];
-  const uidPath = path.join(__dirname, 'uid.txt');
-  
-  if (fs.existsSync(uidPath) && fs.statSync(uidPath).size > 0) {
-    userIDs = fs.readFileSync(uidPath, 'utf8')
-      .split('\n')
-      .map(id => id.trim())
-      .filter(id => id && id !== 'YOUR-USERID/UID-HERE');
-  }
-  
-  if (userIDs.length === 0 && process.env.UID) {
-    userIDs = process.env.UID.replace(/[\[\]']/g, '').split(',').map(id => id.trim()).filter(Boolean);
-  }
-
-  if (userIDs.length === 0) {
-    console.error('No user IDs found in UID environment variable. Exiting...'.red);
-    return;
-  }
-
+  let userIDs = process.env.UID.replace(/[\[\]']/g, '').split(',').map(id => id.trim()).filter(Boolean)
   console.log(`Loaded ${userIDs.length} user ID(s)\n`.green);
 
   if (proxySource.type !== 'none') {
