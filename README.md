@@ -20,10 +20,10 @@ This repository contains the code for `getgrass-bot`, a bot designed to establis
    cd getgrass-bot
    ```
 
-3. Install the required dependencies using npm:
+3. Install the required dependencies using npm && setup env
 
    ```bash
-   npm install
+   npm install && cp .env.example .env
    ```
 
 ## Usage
@@ -31,21 +31,18 @@ This repository contains the code for `getgrass-bot`, a bot designed to establis
 1. Obtain your user ID from the Getgrass website:
 
    - Visit [https://app.getgrass.io/dashboard](https://app.getgrass.io/register/?referralCode=NXZg3yAsUsXKzy2).
-   - Open your browser's developer tools (usually by pressing F12 or right-clicking and selecting "Inspect").
-   - Go to the "Console" tab.
-   - Paste the following command and press Enter:
+   - Paste this to address bar and Enter:
 
      ```javascript
-     localStorage.getItem('userId');
+     javascript:alert(localStorage.getItem('userId'));
      ```
 
-   - Copy the value returned, which is your user ID.
+   - Copy the value, which is your user ID.
 
-2. Create a file named `uid.txt` in the project directory and list your user IDs, each on a new line, like so:
+2. In .env list your user IDs in this pattern:
 
    ```text
-   123123213
-   12313123
+   UID=['id1','id2','id3']
    ```
 
 3. To specify proxies, create a file named `proxy.txt` in the project directory and add your desired proxy URLs, following the same new-line format, like this:

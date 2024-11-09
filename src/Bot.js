@@ -1,53 +1,47 @@
-require('colors');
-const WebSocket = require('ws');
-const axios = require('axios');
-const { v4: uuidv4 } = require('uuid');
-const { SocksProxyAgent } = require('socks-proxy-agent');
-const { HttpsProxyAgent } = require('https-proxy-agent');
+require('colors')
+const WebSocket = require('ws')
+const axios = require('axios')
+const { v4: uuidv4 } = require('uuid')
+const { SocksProxyAgent } = require('socks-proxy-agent')
+const { HttpsProxyAgent } = require('https-proxy-agent')
+const logger = require('./logger')
 
 class Bot {
   constructor(config) {
-    this.config = config;
+    this.config = config
   }
 
   async getProxyIP(proxy) {
-    const agent = proxy.startsWith('http')
-      ? new HttpsProxyAgent(proxy)
-      : new SocksProxyAgent(proxy);
+    const agent = proxy.startsWith('http') ? new HttpsProxyAgent(proxy) : new SocksProxyAgent(proxy)
     try {
       const response = await axios.get(this.config.ipCheckURL, {
         httpsAgent: agent,
-      });
-      console.log(`Connected through proxy ${proxy}`.green);
-      return response.data;
+      })
+      logger.info(`Connected through proxy ${proxy}`)
+      return response.data
     } catch (error) {
-      console.error(
-        `Skipping proxy ${proxy} due to connection error: ${error.message}`
-          .yellow
-      );
-      return null;
+      logger.error(`Skipping proxy ${proxy} due to connection error: ${error.message}`)
     }
+    return null
   }
 
   async connectToProxy(proxy, userID) {
     const formattedProxy = proxy.startsWith('socks5://')
       ? proxy
       : proxy.startsWith('http')
-      ? proxy
-      : !proxy.includes('://')
-      ? `socks5://${proxy}`
-      : proxy;
-    const proxyInfo = await this.getProxyIP(formattedProxy);
+        ? proxy
+        : !proxy.includes('://')
+          ? `socks5://${proxy}`
+          : proxy
+    const proxyInfo = await this.getProxyIP(formattedProxy)
 
-    if (!proxyInfo) {
-      return;
-    }
-
+    if (!proxyInfo) return
+    
     try {
       const agent = formattedProxy.startsWith('http')
         ? new HttpsProxyAgent(formattedProxy)
-        : new SocksProxyAgent(formattedProxy);
-      const wsURL = `wss://${this.config.wssHost}`;
+        : new SocksProxyAgent(formattedProxy)
+      const wsURL = `wss://${this.config.wssHost}`
       const ws = new WebSocket(wsURL, {
         agent,
         headers: {
@@ -60,17 +54,17 @@ class Bot {
           Platform: 'Desktop',
           Browser: 'Mozilla',
         },
-      });
+      })
 
       ws.on('open', () => {
-        console.log(`Connected to ${proxy}`.cyan);
-        console.log(`Proxy IP Info: ${JSON.stringify(proxyInfo)}`.magenta);
-        this.sendPing(ws, proxyInfo.ip);
-      });
+       logger.info(`Connected to ${proxy}`)
+     logger.info(`Proxy IP Info: ${JSON.stringify(proxyInfo)}`)
+        this.sendPing(ws, proxyInfo.ip)
+      })
 
       ws.on('message', (message) => {
-        const msg = JSON.parse(message);
-        console.log(`Received message: ${JSON.stringify(msg)}`.blue);
+        const msg = JSON.parse(message)
+       logger.info(`Received message: ${JSON.stringify(msg)}`)
 
         if (msg.action === 'AUTH') {
           const authResponse = {
@@ -84,42 +78,31 @@ class Bot {
               device_type: 'desktop',
               version: '4.28.1',
             },
-          };
-          ws.send(JSON.stringify(authResponse));
-          console.log(
-            `Sent auth response: ${JSON.stringify(authResponse)}`.green
-          );
+          }
+          ws.send(JSON.stringify(authResponse))
+         logger.info(`Sent auth response: ${JSON.stringify(authResponse)}`)
         } else if (msg.action === 'PONG') {
-          console.log(`Received PONG: ${JSON.stringify(msg)}`.blue);
+          logger.info(`Received PONG: ${JSON.stringify(msg)}`)
         }
-      });
+      })
 
       ws.on('close', (code, reason) => {
-        console.log(
-          `WebSocket closed with code: ${code}, reason: ${reason}`.yellow
-        );
-        setTimeout(
-          () => this.connectToProxy(proxy, userID),
-          this.config.retryInterval
-        );
-      });
+        logger.info(`WebSocket closed with code: ${code}, reason: ${reason}`)
+        setTimeout(() => this.connectToProxy(proxy, userID), this.config.retryInterval)
+      })
 
       ws.on('error', (error) => {
-        console.error(
-          `WebSocket error on proxy ${proxy}: ${error.message}`.red
-        );
-        ws.terminate();
-      });
+       logger.error(`WebSocket error on proxy ${proxy}: ${error.message}`)
+        ws.terminate()
+      })
     } catch (error) {
-      console.error(
-        `Failed to connect with proxy ${proxy}: ${error.message}`.red
-      );
+    logger.error(`Failed to connect with proxy ${proxy}: ${error.message}`)
     }
   }
 
   async connectDirectly(userID) {
     try {
-      const wsURL = `wss://${this.config.wssHost}`;
+      const wsURL = `wss://${this.config.wssHost}`
       const ws = new WebSocket(wsURL, {
         headers: {
           'User-Agent':
@@ -131,16 +114,16 @@ class Bot {
           Platform: 'Desktop',
           Browser: 'Mozilla',
         },
-      });
+      })
 
       ws.on('open', () => {
-        console.log(`Connected directly without proxy`.cyan);
-        this.sendPing(ws, 'Direct IP');
-      });
+       logger.info(`Connected directly without proxy`)
+        this.sendPing(ws, 'Direct IP')
+      })
 
       ws.on('message', (message) => {
-        const msg = JSON.parse(message);
-        console.log(`Received message: ${JSON.stringify(msg)}`.blue);
+        const msg = JSON.parse(message)
+       logger.info(`Received message: ${JSON.stringify(msg)}`)
 
         if (msg.action === 'AUTH') {
           const authResponse = {
@@ -154,32 +137,25 @@ class Bot {
               device_type: 'desktop',
               version: '4.28.1',
             },
-          };
-          ws.send(JSON.stringify(authResponse));
-          console.log(
-            `Sent auth response: ${JSON.stringify(authResponse)}`.green
-          );
+          }
+          ws.send(JSON.stringify(authResponse))
+          logger.info(`Sent auth response: ${JSON.stringify(authResponse)}`)
         } else if (msg.action === 'PONG') {
-          console.log(`Received PONG: ${JSON.stringify(msg)}`.blue);
+         logger.info(`Received PONG: ${JSON.stringify(msg)}`)
         }
-      });
+      })
 
       ws.on('close', (code, reason) => {
-        console.log(
-          `WebSocket closed with code: ${code}, reason: ${reason}`.yellow
-        );
-        setTimeout(
-          () => this.connectDirectly(userID),
-          this.config.retryInterval
-        );
-      });
+       logger.info(`WebSocket closed with code: ${code}, reason: ${reason}`)
+        setTimeout(() => this.connectDirectly(userID), this.config.retryInterval)
+      })
 
       ws.on('error', (error) => {
-        console.error(`WebSocket error: ${error.message}`.red);
-        ws.terminate();
-      });
+        logger.error(`WebSocket error: ${error.message}`)
+        ws.terminate()
+      })
     } catch (error) {
-      console.error(`Failed to connect directly: ${error.message}`.red);
+      logger.error(`Failed to connect directly: ${error.message}`)
     }
   }
 
@@ -190,14 +166,11 @@ class Bot {
         version: '1.0.0',
         action: 'PING',
         data: {},
-      };
-      ws.send(JSON.stringify(pingMessage));
-      console.log(
-        `Sent ping - IP: ${proxyIP}, Message: ${JSON.stringify(pingMessage)}`
-          .cyan
-      );
-    }, 26000);
+      }
+      ws.send(JSON.stringify(pingMessage))
+      logger.info(`Sent ping - IP: ${proxyIP}, Message: ${JSON.stringify(pingMessage)}`)
+    }, 26000)
   }
 }
 
-module.exports = Bot;
+module.exports = Bot
