@@ -1,4 +1,4 @@
-require('colors');
+const colors = require('colors');
 const axios = require('axios');
 const fs = require('fs');
 
@@ -19,9 +19,9 @@ async function fetchProxies(url) {
     const response = await axios.get(url);
     console.log(`\nFetched proxies from ${url}`.green);
     if (url.includes("githubusercontent")) {
-      if (url.includes("http.txt")) return response.data.split('\n').map(e=>"http:/\/"+e).filter(Boolean);
-      else if (url.includes("socks4.txt")) return response.data.split('\n').map(e=>"socks4:/\/"+e).filter(Boolean);
-      else return response.data.split('\n').map(e=>"socks5:/\/"+e).filter(Boolean);
+      if (url.includes("http.txt")) return response.data.split('\n').map(e => `http://${e}`).filter(Boolean);
+      else if (url.includes("socks4.txt")) return response.data.split('\n').map(e => `socks4://${e}`).filter(Boolean);
+      else return response.data.split('\n').map(e => `socks5://${e}`).filter(Boolean);
     }
     else return response.data.split('\n').filter(Boolean);
   } catch (error) {
@@ -70,10 +70,11 @@ async function selectProxySource(inquirer) {
 }
 
 async function selectProxySource2(svname) {
-  if (["SERVER 1","SERVER 2","SERVER 3","SERVER 4","SERVER 5","SERVER 6","SERVER 7","SERVER 8","SERVER 9"].includes(svname.toUpperCase()))
+  if (typeof svname === 'string' && ["SERVER 1", "SERVER 2", "SERVER 3", "SERVER 4", "SERVER 5", "SERVER 6", "SERVER 7", "SERVER 8", "SERVER 9"].includes(svname.toUpperCase())) {
     return { type: 'url', source: PROXY_SOURCES[svname.toUpperCase()] };
-  else
+  } else {
     return { type: 'none' };
+  }
 }
 
 module.exports = { fetchProxies, readLines, selectProxySource, selectProxySource2 };

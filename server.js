@@ -1,4 +1,5 @@
 require('colors');
+const fs = require('fs');
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, './.env') });
 const inquirer = require('inquirer');
@@ -50,8 +51,17 @@ async function main(sv) {
  */
 
   let userIDs = [];
-  if (process.env.UID) {
-    userIDs = process.env.UID.replace(/[\[\]']/g, '').split(',').map(id => id.trim());
+  const uidPath = path.join(__dirname, 'uid.txt');
+  
+  if (fs.existsSync(uidPath) && fs.statSync(uidPath).size > 0) {
+    userIDs = fs.readFileSync(uidPath, 'utf8')
+      .split('\n')
+      .map(id => id.trim())
+      .filter(id => id && id !== 'YOUR-USERID/UID-HERE');
+  }
+  
+  if (userIDs.length === 0 && process.env.UID) {
+    userIDs = process.env.UID.replace(/[\[\]']/g, '').split(',').map(id => id.trim()).filter(Boolean);
   }
 
   if (userIDs.length === 0) {
@@ -84,6 +94,6 @@ app.listen(port, () => {
   */
 });
 
-main('NO PROXY').catch(console.error);
+main('SERVER 1').catch(console.error);
 
 module.exports = app;
