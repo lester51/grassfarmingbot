@@ -1,7 +1,6 @@
 require('colors')
-const fs = require('fs')
-const path = require('path')
 require('dotenv').config()
+const fs = require('fs')
 const inquirer = require('inquirer')
 const Bot = require('./src/Bot')
 const Config = require('./src/Config')
@@ -14,7 +13,7 @@ const {
 const { delay, displayHeader } = require('./src/utils')
 const express = require('express')
 const app = express()
-const port = 3000
+const port = process.env.EXPRESS_PORT
 
 async function main(sv) {
   displayHeader()
@@ -34,10 +33,8 @@ async function main(sv) {
     console.log('No proxy selected. Connecting directly.'.cyan)
   }
 
-  if (proxySource.type !== 'none' && proxies.length === 0) {
-    console.error('No proxies found. Exiting...'.red)
-    return
-  }
+  if (proxySource.type !== 'none' && proxies.length === 0)
+    return console.error('No proxies found. Exiting...'.red)
 
   console.log(
     proxySource.type !== 'none'
@@ -54,20 +51,21 @@ async function main(sv) {
     .split(',')
     .map((id) => id.trim())
     .filter(Boolean)
-  console.log(`Loaded ${userIDs.length} user ID(s)\n`.green)
+  userIDs.forEach((id, index) => {
+    console.log(`Loaded User ID #${id}`.green)
+  })
 
-  if (proxySource.type !== 'none') {
-    await Promise.all(
+  if (proxySource.type !== 'none')
+    return await Promise.all(
       userIDs.flatMap((userID) => proxies.map((proxy) => bot.connectToProxy(proxy, userID))),
     )
-  } else {
-    await Promise.all(userIDs.map((userID) => bot.connectDirectly(userID)))
-  }
+
+  await Promise.all(userIDs.map((userID) => bot.connectDirectly(userID)))
 }
 
-app.get('/', (req, res) => {
-  res.send('SERVER FOR GRASS NODE AUTOFARMING SCRIPT\nMADE\nBY\nHackMeSenpai(HMS)')
-})
+app.get('/', (req, res) =>
+  res.send('SERVER FOR GRASS NODE AUTOFARMING SCRIPT\nMADE\nBY\nHackMeSenpai(HMS)'),
+)
 
 app.listen(port, () => {
   console.log(`Express Server Started\nlistening on port ${port}`.green)
