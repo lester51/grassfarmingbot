@@ -69,13 +69,13 @@ app.get('/', (req, res) => {
   res.send('SERVER FOR GRASS NODE AUTOFARMING SCRIPT\nMADE\nBY\nHackMeSenpai(HMS)')
 })
 
-app.listen(port, async() => {
+app.listen(port, () => {
   console.log(`Express Server Started\nlistening on port ${port}`)
   /*let svlist = ["SERVER 1","SERVER 2","SERVER 3","SERVER 4","SERVER 5","SERVER 6","SERVER 7","SERVER 8","SERVER 9"];
 for (let el in svlist) {
     await main(svlist[el]).catch(console.error);
   }*/
-  await main('NO PROXY').catch(console.error);
+  main('NO PROXY').catch(console.error);
 })
 
 module.exports = app;
