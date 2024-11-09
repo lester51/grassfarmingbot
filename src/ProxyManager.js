@@ -1,6 +1,7 @@
 const colors = require('colors')
 const axios = require('axios')
 const fs = require('fs')
+const logger = require('./logger')
 
 const PROXY_SOURCES = {
   'SERVER 1': 'https://files.ramanode.top/airdrop/grass/server_1.txt',
@@ -17,7 +18,7 @@ const PROXY_SOURCES = {
 async function fetchProxies(url) {
   try {
     const response = await axios.get(url)
-    console.log(`\nFetched proxies from ${url}`.green)
+    logger.info(`\nFetched proxies from ${url}`)
     if (url.includes('githubusercontent')) {
       if (url.includes('http.txt'))
         return response.data
@@ -36,20 +37,20 @@ async function fetchProxies(url) {
           .filter(Boolean)
     } else return response.data.split('\n').filter(Boolean)
   } catch (error) {
-    console.error(`Failed to fetch proxies from ${url}: ${error.message}`.red)
-    return []
+    logger.error(`Failed to fetch proxies from ${url}: ${error.message}`)
   }
+  return []
 }
 
 async function readLines(filename) {
   try {
     const data = await fs.promises.readFile(filename, 'utf-8')
-    console.log(`Loaded data from ${filename}`.green)
+    logger.info(`Loaded data from ${filename}`)
     return data.split('\n').filter(Boolean)
   } catch (error) {
-    console.error(`Failed to read ${filename}: ${error.message}`.red)
-    return []
+    logger.error(`Failed to read ${filename}: ${error.message}`)
   }
+  return []
 }
 
 async function selectProxySource(inquirer) {

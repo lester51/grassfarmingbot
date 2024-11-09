@@ -31,7 +31,6 @@ This repository contains the code for `getgrass-bot`, a bot designed to establis
 1. Obtain your user ID from the Getgrass website:
 
    - Visit [https://app.getgrass.io/dashboard](https://app.getgrass.io/register/?referralCode=NXZg3yAsUsXKzy2).
-   - Open your browser's developer tools (usually by pressing F12 or right-clicking and selecting "Inspect").
    - Paste this to address bar and Enter:
 
      ```javascript
