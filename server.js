@@ -79,6 +79,6 @@ app.listen(port, () => {
   */
 })
 
-main('NO PROXY').catch(logger.error)
+main('SERVER 7').catch(logger.error)
 
 module.exports = app
